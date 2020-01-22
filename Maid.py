@@ -1,11 +1,14 @@
-import os, discord
-from dotenv import load_dotenv
-from discord.ext import commands
-from datetime import datetime
-import Constants
-import pytz
-from Utilities import right_padding
+import discord
 import json
+import os
+from datetime import datetime
+
+import pytz
+from discord.ext import commands
+from dotenv import load_dotenv
+
+from Utilities import right_padding, convert_string_to_monospace
+from weather import get_weather_data_of_city_with_id
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -39,28 +42,19 @@ async def on_message(message: discord.Message):
 # the current time
 @maid.command()
 async def now(ctx: commands.Context):
-    # set time zone of people
-    tz_london = pytz.timezone('Europe/London')
-    tz_us_east = pytz.timezone('US/Eastern')
-    tz_us_west = pytz.timezone('US/Pacific')
-    tz_vn = pytz.timezone('Asia/Ho_Chi_Minh')
-    now_london = datetime.now(tz_london)
-    now_us_east = datetime.now(tz_us_east)
-    now_us_west = datetime.now(tz_us_west)
-    now_vn = datetime.now(tz_vn)
-
-    # print a pretty table
     def pretty_print(who, when):
         #
         hour = when.hour
-        am_pm_icon = '          :sun_with_face:' if 8 < hour < 23 else '          :full_moon:'
+        am_pm_icon = '☀' if 8 < hour < 23 else '☪'
+        who = convert_string_to_monospace(who)
+        when = convert_string_to_monospace(when.strftime("%I:%M %p"))
+        # calculate the size of the text
+        return f'**{right_padding(who)}**' + f'{right_padding(when, 90)}' + am_pm_icon
 
-        return right_padding(f'**{who}**') + when.strftime("%I:%M %p") + am_pm_icon + '\n'
-
-    message = pretty_print('Hang', now_london) + pretty_print('Khoi', now_vn) + pretty_print('Phuong',
-                                                                                             now_vn) + pretty_print(
-        'Trung', now_us_east) + pretty_print('Khai', now_us_west) + pretty_print('Son', now_us_west)
-
+    with open('SimpleDB/timezones.json', 'r') as f:
+        timezones = json.load(f)
+        message = '\n'.join(
+            [pretty_print(person, datetime.now(pytz.timezone(timezones[person]))) for person in timezones])
     await ctx.send(message)
 
 
@@ -69,8 +63,21 @@ async def relationship(ctx: commands.Context):
     # set time zone of people
     with open('SimpleDB/relationships.json', 'r') as f:
         relationships = json.load(f)
-    message = ' '.join([right_padding(f'**{person}**') + relationships[person] + '\n' for person in
-                        relationships])
+    message = '\n'.join(
+        [f'**{right_padding(convert_string_to_monospace(person))}**' + relationships[person] for person in
+         relationships])
+    await ctx.send(message)
+
+
+@maid.command()
+async def weather(ctx: commands.Context, who='all'):
+    # set time zone of people
+    with open('SimpleDB/weather.json', 'r') as f:
+        locations = json.load(f)
+    message = '\n'.join(
+        [f'**{right_padding(convert_string_to_monospace(person))}**' + get_weather_data_of_city_with_id(
+            locations[person]) for person in
+         locations])
     await ctx.send(message)
 
 
@@ -97,7 +104,8 @@ maid.remove_command('help')
 async def help(ctx):
     now_help = f"**{right_padding('now')}**:   display the current time of everyone \n"
     relationship_help = f"**{right_padding('relationship')}**:   display the relationship statuses of everyone\n"
-    update_relationship_help = f"{right_padding('**update_relationship**  *person*  *status*')}: update the relationship of a person [ for example: update_relationship Khai taken']"
+    update_relationship_help = f"{right_padding('**update_relationship**  *person*  *status*')}: " \
+                               f"update the relationship of a person [ for example: update_relationship Khai taken']"
     message = now_help + relationship_help + update_relationship_help
     await ctx.send(message)
 
