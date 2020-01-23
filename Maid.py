@@ -14,7 +14,7 @@ load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 name = os.getenv('DISCORD_BOT_NAME')
 bot_name = '<@!668950009831489536>'
-maid: commands.Bot = commands.Bot(['<@!668950009831489536>', '$'])
+maid: commands.Bot = commands.Bot(['$'])
 
 
 @maid.event
@@ -25,19 +25,19 @@ async def on_ready():
         print(f'{guild.name}')
 
 
-@maid.event
-async def on_message(message: discord.Message):
-    # strip the bot name from the message
-    if len(message.content.split()) > 1:
-        split_content = message.content.split()
-        # reassemble the command with _ and bot mention
-        message.content = bot_name + ' '.join(split_content[1:])
-        # get all of the params
-
-    # if maid.user.mentioned_in(message) and 'whoareyou' in str(message.content).lower().replace(' ', ''):
-    #     await message.channel.send(' I am a maid!')
-    await maid.process_commands(message)
-
+# @maid.event
+# async def on_message(message: discord.Message):
+#     # strip the bot name from the message
+#     if len(message.content.split()) > 1:
+#         split_content = message.content.split()
+#         # reassemble the command with _ and bot mention
+#         message.content = bot_name + ' '.join(split_content[1:])
+#         # get all of the params
+#
+#     # if maid.user.mentioned_in(message) and 'whoareyou' in str(message.content).lower().replace(' ', ''):
+#     #     await message.channel.send(' I am a maid!')
+#     await maid.process_commands(message)
+#
 
 # the current time
 @maid.command()
@@ -98,6 +98,11 @@ async def update_relationship(ctx: commands.Context, person, status):
 
 
 maid.remove_command('help')
+
+
+@maid.command()
+async def vidcall(ctx):
+    await ctx.send('https://meet.google.com/kvh-xfkw-ymo')
 
 
 @maid.command()

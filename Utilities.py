@@ -10,18 +10,16 @@ def right_padding(s: str, desired_width: int = 106, padding_char=' ') -> str:
     padded_whitespace = math.floor((desired_width - s_width) // 4) * padding_char
     return f'{s}{padded_whitespace}'
 
-
-def convert_char_to_monospace(char: str, first_converted_char='A', first_comparison_char='A') -> str:
-    return chr(ord(char) - ord(first_comparison_char) + ord(first_converted_char))
-
-
 def convert_string_to_monospace(t: str) -> str:
     out_s = ''
     for c in t:
         if c.isdigit():
             out_s += chr(ord(c) - ord('0') + ord('𝟶'))
         elif c.isalpha():
-            out_s += chr(ord(c.upper()) - ord('A') + ord('𝙰'))
+            if c.isupper():
+                out_s += chr(ord(c) - ord('A') + ord('𝙰'))
+            else:
+                out_s += chr(ord(c) - ord('a') + ord('𝚊'))
         else:
             out_s += c
     return out_s
