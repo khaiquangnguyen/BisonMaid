@@ -1,3 +1,5 @@
+from enum import Enum
+
 font_sizes = {'\x00': (6, 12), '\x01': (6, 12), '\x02': (6, 12), '\x03': (6, 12), '\x04': (6, 12), '\x05': (6, 12),
               '\x06': (6, 12), '\x07': (6, 12), '\x08': (6, 12), '\t': (6, 12), '\n': (6, 12), '\x0b': (6, 12),
               '\x0c': (6, 12), '\r': (6, 12), '\x0e': (6, 12), '\x0f': (6, 12), '\x10': (6, 12), '\x11': (6, 12),
@@ -29,7 +31,6 @@ font_sizes = {'\x00': (6, 12), '\x01': (6, 12), '\x02': (6, 12), '\x03': (6, 12)
               'º': (5, 12), '»': (6, 12), '¼': (6, 14), '½': (6, 14), '¾': (6, 14), '¿': (6, 12), 'À': (8, 12),
               'Á': (8, 12), 'Â': (8, 12), 'Ã': (8, 12), 'Ä': (8, 12), 'Å': (8, 12), 'Æ': (10, 12), 'Ç': (8, 14)}
 
-
 relationship_statuses = {
     'Hang': 'looking to be captured',
     'Khai': 'captured',
@@ -37,3 +38,9 @@ relationship_statuses = {
     'Khoi': 'escaped',
     'Trung': 'winner'
 }
+
+
+class FeatureTypes(Enum):
+    REQUESTED = 'requested'
+    DEVELOPING = 'developing',
+    COMPLETED = 'completed',

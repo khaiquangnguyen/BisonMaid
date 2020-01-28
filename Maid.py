@@ -1,4 +1,3 @@
-import discord
 import json
 import os
 from datetime import datetime
@@ -7,9 +6,9 @@ import pytz
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from Utilities import right_padding, convert_string_to_monospace
+from Utilities import right_padding, to_monospace, move_feature_log, get_feature_type
 from weather import get_weather_data_of_city_with_id
-
+from Constants import FeatureTypes
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 name = os.getenv('DISCORD_BOT_NAME')
@@ -46,8 +45,8 @@ async def now(ctx: commands.Context):
         #
         hour = when.hour
         am_pm_icon = '☀' if 8 < hour < 23 else '☪'
-        who = convert_string_to_monospace(who)
-        when = convert_string_to_monospace(when.strftime("%I:%M %p"))
+        who = to_monospace(who)
+        when = to_monospace(when.strftime("%I:%M %p"))
         # calculate the size of the text
         return f'**{right_padding(who)}**' + f'{right_padding(when, 90)}' + am_pm_icon
 
@@ -64,7 +63,7 @@ async def relationship(ctx: commands.Context):
     with open('SimpleDB/relationships.json', 'r') as f:
         relationships = json.load(f)
     message = '\n'.join(
-        [f'**{right_padding(convert_string_to_monospace(person))}**' + relationships[person] for person in
+        [f'**{right_padding(to_monospace(person))}**' + relationships[person] for person in
          relationships])
     await ctx.send(message)
 
@@ -75,7 +74,7 @@ async def weather(ctx: commands.Context, who='all'):
     with open('SimpleDB/weather.json', 'r') as f:
         locations = json.load(f)
     message = '\n'.join(
-        [f'**{right_padding(convert_string_to_monospace(person))}**' + get_weather_data_of_city_with_id(
+        [f'**{right_padding(to_monospace(person))}**' + get_weather_data_of_city_with_id(
             locations[person]) for person in
          locations])
     await ctx.send(message)
@@ -103,6 +102,49 @@ maid.remove_command('help')
 @maid.command()
 async def vidcall(ctx):
     await ctx.send('https://meet.google.com/kvh-xfkw-ymo')
+
+
+@maid.command()
+async def request_feature(ctx, feature: str):
+    with open('SimpleDB/features.json', 'r') as f:
+        all_features = json.load(f)
+        requested = all_features.get(FeatureTypes.REQUESTED.value, [])
+        time_stamp = datetime.timestamp(datetime.now())
+        requested.append({'feature': feature, 'time_stamp': time_stamp})
+        all_features[FeatureTypes.REQUESTED.value] = requested
+    with open('SimpleDB/features.json', 'w') as f:
+        json.dump(all_features, f)
+    await ctx.send('The requested feature has been added to feature list. ')
+
+
+@maid.command()
+async def requested_features(ctx):
+    response = get_feature_type(FeatureTypes.REQUESTED.value)
+    await ctx.send(response)
+
+
+@maid.command()
+async def completed_features(ctx):
+    response = get_feature_type(FeatureTypes.COMPLETED.value)
+    await ctx.send(response)
+
+
+@maid.command()
+async def developing_features(ctx):
+    response = get_feature_type(FeatureTypes.DEVELOPING.value)
+    await ctx.send(response)
+
+
+@maid.command()
+async def working_on_feature(ctx, index: int):
+    response = move_feature_log(FeatureTypes.REQUESTED.value, FeatureTypes.DEVELOPING.value, index)
+    await ctx.send(response)
+
+
+@maid.command()
+async def complete_feature(ctx, index: int):
+    response = move_feature_log(FeatureTypes.DEVELOPING.value, FeatureTypes.COMPLETED.value, index)
+    await ctx.send(response)
 
 
 @maid.command()

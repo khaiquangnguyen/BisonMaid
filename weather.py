@@ -2,7 +2,7 @@
 import os
 import requests
 from dotenv import load_dotenv
-from Utilities import right_padding, convert_string_to_monospace
+from Utilities import right_padding, to_monospace
 
 load_dotenv()
 api_key = os.getenv('WEATHER_API_KEY')
@@ -24,5 +24,5 @@ def get_weather_data_of_city_with_id(id: int) -> str:
     weather_icon_link = weather_data.get('icon', '')
     weather_icon = f'https://openweathermap.org/img/wn/{weather_icon_link}@2x.png'
     # print following values
-    return f'{right_padding(convert_string_to_monospace(city_name))}   ' \
-           f'{right_padding(convert_string_to_monospace("{:04.1f}".format(temp) + " °C"), 80)} {weather}'
+    return f'{right_padding(to_monospace(city_name))}   ' \
+           f'{right_padding(to_monospace("{:04.1f}".format(temp) + " °C"), 80)} {weather}'
