@@ -39,6 +39,8 @@ relationship_statuses = {
     'Trung': 'winner'
 }
 
+ZERO_WIDTH_CHAR = '\u200b'
+
 
 class FeatureTypes(Enum):
     REQUESTED = 'requested'

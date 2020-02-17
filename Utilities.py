@@ -3,7 +3,7 @@ import math
 
 from PIL import ImageFont
 from Constants import FeatureTypes
-
+from Constants import ZERO_WIDTH_CHAR
 # the empty bank is not a simple ' '. it's actually a unicode character
 # U+2004	&#8196	Three-Per-Em Space	[ ]
 def right_padding(s: str, desired_width: int = 106, padding_char=' ') -> str:
@@ -61,3 +61,7 @@ def get_feature_type(feature_key: FeatureTypes):
         response = '\n'.join([f"{right_padding(f'**{to_monospace(str(index))}**', 20)} - {value['feature']}" for (index, value) in
                               enumerate(features)])
         return response
+
+
+def to_markdown(string):
+    return f'```{string}```'
