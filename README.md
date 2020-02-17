@@ -80,6 +80,10 @@ familiar with terminal since this terminal will automatically switch to Pipenv. 
 pipenv for this project yourself).
 - Just to make sure, let's just type in **pipenv shell** to turn on pipenv for this project
 - Type in **pipenv install** to install all the dependencies
+- Ask me for the .env file
+
+####8. Run it
+In Pycharm, click on **Run -> Run 'Maid'**. Or just press Shift+F10.
 
 
 
