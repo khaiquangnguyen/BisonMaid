@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 from Utilities import right_padding, to_monospace, move_feature_log, get_feature_type
 from weather import get_weather_data_of_city_with_id
 from Constants import FeatureTypes
+
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 name = os.getenv('DISCORD_BOT_NAME')
@@ -157,4 +158,5 @@ async def help(ctx):
     await ctx.send(message)
 
 
-maid.run(token)
+if __name__ == '__main__':
+    maid.run(token)
